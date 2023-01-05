@@ -15,11 +15,9 @@ jobs:
       env:
         DOCKER_VAR: value_from_env2
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
-        DOCKER_PASSWORD: ${{ env.DOCKER_PASSWORD }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        echo "testing 12345"
         echo $DOCKER_VAR
-        echo $DOCKER_USER
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: Build & Push Image
       run: |
