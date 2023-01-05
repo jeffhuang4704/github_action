@@ -17,7 +17,7 @@ jobs:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASSWORD: ${{ env.DOCKER_PASSWORD }}
       run: |
-        echo "testing 1234"
+        echo "testing 12345"
         echo $DOCKER_VAR
         echo $DOCKER_USER
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
