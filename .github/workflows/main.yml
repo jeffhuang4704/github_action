@@ -20,6 +20,7 @@ jobs:
         echo $DOCKER_VAR
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: Build & Push Image
+      working-directory: myweb
       run: |
         docker build -t chihjenhuang/myweb:v2 .
         docker push chihjenhuang/myweb:v2
