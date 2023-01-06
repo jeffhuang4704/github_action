@@ -27,8 +27,8 @@ jobs:
     #     cosign-release: 'v1.11.0'
     - name: step-2 Install Cosign
       uses: sigstore/cosign-installer@main
-      with:
-        cosign-release: 'v2.8.1'
+      # with:
+      #   cosign-release: 'v2.8.1'
     - name: step-3 - docker login
       env:
         DOCKER_VAR: value_from_env2
