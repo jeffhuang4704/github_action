@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: step-01 - checkout out
+    - name: step-1 - checkout out
       uses: actions/checkout@v2
     - name: step-2 - docker login
       env:
@@ -20,8 +20,13 @@ jobs:
       run: |
         echo $DOCKER_VAR
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - name: step-3 - Build & Push Image
+    - name: step-3 - build & push myweb
       working-directory: myweb
       run: |
         docker build -t chihjenhuang/myweb:v3 .
         docker push chihjenhuang/myweb:v3
+    - name: step-4 - build & push myweb2
+      working-directory: myweb2
+      run: |
+        docker build -t chihjenhuang/myweb2:v1 .
+        docker push chihjenhuang/myweb2:v1
