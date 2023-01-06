@@ -9,10 +9,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
     steps:
     - name: step-1 - checkout out
       uses: actions/checkout@v2
-    - name: step-2 - docker login
+    # Install the cosign tool except on PR
+    # https://github.com/sigstore/cosign-installer
+    - name: step-2 Install cosign
+      if: github.event_name != 'pull_request'
+      uses: sigstore/cosign-installer@f3c664df7af409cb4873aa5068053ba9d61a57b6 #v2.6.0
+      with:
+        cosign-release: 'v1.11.0'
+    - name: step-3 - docker login
       env:
         DOCKER_VAR: value_from_env2
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
@@ -20,13 +33,25 @@ jobs:
       run: |
         echo $DOCKER_VAR
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - name: step-3 - build & push myweb
+    - name: step-4 - build & push myweb
       working-directory: myweb
       run: |
         docker build -t chihjenhuang/myweb:v3 .
         docker push chihjenhuang/myweb:v3
-    - name: step-4 - build & push myweb2
+    - name: step-5 - build & push myweb2
       working-directory: myweb2
       run: |
         docker build -t chihjenhuang/myweb2:v1 .
-        docker push chihjenhuang/myweb2:v1
+        docker push chihjenhuang/myweb2:keyless_sign
+    # Sign the resulting Docker image digest except on PRs.
+    # This will only write to the public Rekor transparency log when the Docker
+    # repository is public to avoid leaking data.  If you would like to publish
+    # transparency data even for private images, pass --force to cosign below.
+    # https://github.com/sigstore/cosign
+    - name: Sign the published Docker image
+      if: ${{ github.event_name != 'pull_request' }}
+      env:
+        COSIGN_EXPERIMENTAL: "true"
+      # This step uses the identity token to provision an ephemeral certificate
+      # against the sigstore community Fulcio instance.
+      run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
