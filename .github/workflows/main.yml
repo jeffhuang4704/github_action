@@ -41,7 +41,7 @@ jobs:
     - name: step-5 - build & push myweb2
       working-directory: myweb2
       run: |
-        docker build -t chihjenhuang/myweb2:v1 .
+        docker build -t chihjenhuang/myweb2:keyless_sign .
         docker push chihjenhuang/myweb2:keyless_sign
     # Sign the resulting Docker image digest except on PRs.
     # This will only write to the public Rekor transparency log when the Docker
