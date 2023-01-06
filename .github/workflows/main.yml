@@ -20,11 +20,15 @@ jobs:
       uses: actions/checkout@v2
     # Install the cosign tool except on PR
     # https://github.com/sigstore/cosign-installer
-    - name: step-2 Install cosign
-      if: github.event_name != 'pull_request'
-      uses: sigstore/cosign-installer@f3c664df7af409cb4873aa5068053ba9d61a57b6 #v2.6.0
+    # - name: step-2 Install cosign
+    #   if: github.event_name != 'pull_request'
+    #   uses: sigstore/cosign-installer@f3c664df7af409cb4873aa5068053ba9d61a57b6 #v2.6.0
+    #   with:
+    #     cosign-release: 'v1.11.0'
+    - name: step-2 Install Cosign
+      uses: sigstore/cosign-installer@main
       with:
-        cosign-release: 'v1.11.0'
+        cosign-release: 'v2.8.1'
     - name: step-3 - docker login
       env:
         DOCKER_VAR: value_from_env2
@@ -41,8 +45,8 @@ jobs:
     - name: step-5 - build & push myweb2
       working-directory: myweb2
       run: |
-        docker build -t chihjenhuang/myweb2:keyless_sign .
-        docker push chihjenhuang/myweb2:keyless_sign
+        docker build -t chihjenhuang/myweb2:keyless_sign2 .
+        docker push chihjenhuang/myweb2:keyless_sign2
     # Sign the resulting Docker image digest except on PRs.
     # This will only write to the public Rekor transparency log when the Docker
     # repository is public to avoid leaking data.  If you would like to publish
@@ -56,4 +60,4 @@ jobs:
       # against the sigstore community Fulcio instance.
       # run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
       run: |
-        cosign sign chihjenhuang/myweb2:keyless_sign
+        cosign sign chihjenhuang/myweb2:keyless_sign2
